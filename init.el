@@ -37,7 +37,12 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-;(package-initialize)
+
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+
+(package-initialize)
 
 (defvar current-user
   (getenv
@@ -90,6 +95,10 @@ by Prelude.")
 (add-to-list 'load-path prelude-vendor-dir)
 (prelude-add-subfolders-to-load-path prelude-vendor-dir)
 
+;; External plugins directory
+(add-to-list 'load-path "~/.emacs.d/external/")
+(add-to-list 'load-path "/home/sabnave/Lab/emacs-learning/prelude/external/emacs-color-theme-solarized/")
+
 ;; reduce the frequency of garbage collection by making it happen on
 ;; each 50MB of allocated data (the default is on every 0.76MB)
 (setq gc-cons-threshold 50000000)
@@ -138,5 +147,66 @@ by Prelude.")
 (prelude-eval-after-init
  ;; greet the use with some useful tip
  (run-at-time 5 nil 'prelude-tip-of-the-day))
+
+;; (add-to-list 'load-path "/home/sabnave/.emacs.d/neotree")
+(add-to-list 'load-path "/home/sabnave/.emacs.d/external")
+(require 'neotree)
+(global-set-key [f8] 'neotree-toggle)
+
+(load-theme 'zenburn)
+
+(defun transparency (value)
+  "Set the transparency VALUE(0=transparent/100=opaque) of the frame window."
+  (interactive "nTransparency Value 0 - 100 opaque: ")
+  (set-frame-parameter (selected-frame) 'alpha value))
+
+(transparency 95)
+
+(require 'tramp-cache)
+(setq tramp-persistency-file-name "/tmp/.tramp")
+(setq tramp-histfile-override "/dev/null")
+
+(add-hook 'html-mode-hook
+          (lambda()
+            (setq sgml-basic-offset 2)
+            (setq indent-tabs-mode t)))
+
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-indent-style 2)
+)
+(add-hook 'web-mode-hook  'my-web-mode-hook)
+
+(require 'elm-mode)
+(setq elm-format-on-save t)
+(require 'flycheck)
+(with-eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook #'flycheck-elm-setup))
+
+
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+
+(add-hook 'ruby-mode-hook 'minitest-mode)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'ruby-mode-hook 'robe-mode)
+
+(require 'mu4e-config)
+(require 'minitest)
+
+(add-hook 'go-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'gofmt-before-save)
+            (setq-default)
+            (setq tab-width 2)
+            (setq standard-indent 2)
+            (setq indent-tabs-mode nil)))
 
 ;;; init.el ends here
